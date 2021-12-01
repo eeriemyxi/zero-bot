@@ -3,6 +3,8 @@ from ddg_scraper import asearch
 from disnake.ext import commands
 from ext.paginator import Paginator
 
+from contextlib import suppress
+
 
 class DuckDuckGoSearch(commands.Cog):
     def __init__(self, bot):
@@ -20,14 +22,12 @@ class DuckDuckGoSearch(commands.Cog):
         await inter.response.defer()
         results = await asearch(query)
         embeds = list()
-        try:
+        with suppress(ValueError):
             async for result in results:
                 embed = disnake.Embed(
                     title=result.title, url=result.url, description=result.description
                 )
                 embeds.append(embed)
-        except ValueError:
-            pass
         paginator = Paginator(inter, embeds)
         await inter.edit_original_message(embed=paginator.current_embed, view=paginator)
 
