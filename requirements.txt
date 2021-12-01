@@ -1,2 +1,3 @@
 ddg-scraper
 disnake
+python-dotenv
