@@ -1,10 +1,10 @@
 import disnake
 import httpx
 from disnake.ext import commands
+from ext.paginator import Paginator
+from ext.utils import parse_desc
 from selectolax.parser import HTMLParser
 from yarl import URL
-from ext.utils import parse_desc
-from ext.paginator import Paginator
 
 
 class Search:

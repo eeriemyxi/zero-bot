@@ -1,6 +1,7 @@
+from collections import Counter
+
 import disnake
 from disnake.ext import commands
-from collections import Counter
 
 
 class PollSelect(disnake.ui.Select):
