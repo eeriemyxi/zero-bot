@@ -7,12 +7,10 @@ from disnake.ext import commands
 class PollSelect(disnake.ui.Select):
     def __init__(
         self,
-        _view,
         *args,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
-        self._view = _view
 
     async def callback(self, inter):
         await inter.response.defer()
@@ -55,7 +53,7 @@ class PollView(disnake.ui.View):
         self.message: disnake.Message
         self.add_item(
             PollSelect(
-                _view=self, placeholder="Select poll option", options=self.get_options()
+                placeholder="Select poll option", options=self.get_options()
             )
         )
 
