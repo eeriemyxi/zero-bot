@@ -16,25 +16,27 @@ class PollSelect(disnake.ui.Select):
 
     async def callback(self, inter):
         await inter.response.defer()
-        if inter.author not in self._view.voted:
+        if inter.author not in self.view.voted:
             self.view.voted[inter.author] = inter.values[0]
-            self._view.change_vote(inter.values[0], "+")
-            await self._view.inter.edit_original_message(
-                content=f">>> {self._view.question}",
-                view=self._view,
-                embed=self._view.get_embed(),
+            self.view.change_vote(inter.values[0], "+")
+
+            await self.view.inter.edit_original_message(
+                content=f">>> {self.view.question}",
+                view=self.view,
+                embed=self.view.get_embed(),
             )
         elif (
-            inter.author in self._view.voted
-            and self._view.voted[inter.author] != inter.values[0]
+            inter.author in self.view.voted
+            and self.view.voted[inter.author] != inter.values[0]
         ):
-            self._view.change_vote(self._view.voted[inter.author], "-")
-            self._view.voted[inter.author] = inter.values[0]
-            self._view.change_vote(inter.values[0], "+")
-            await self._view.inter.edit_original_message(
-                content=f">>> {self._view.question}",
-                view=self._view,
-                embed=self._view.get_embed(),
+            self.view.change_vote(self.view.voted[inter.author], "-")
+            self.view.voted[inter.author] = inter.values[0]
+            self.view.change_vote(inter.values[0], "+")
+
+            await self.view.inter.edit_original_message(
+                content=f">>> {self.view.question}",
+                view=self.view,
+                embed=self.view.get_embed(),
             )
         else:
             await inter.followup.send(
@@ -65,7 +67,7 @@ class PollView(disnake.ui.View):
             if label == getattr(option, "label", None):
                 if operator == "+":
                     self.select_option_votes.update([option])
-                else:
+                elif operator == "-":
                     if self.select_option_votes[option] > 0:
                         self.select_option_votes.subtract([option])
                 return
@@ -89,6 +91,7 @@ class PollView(disnake.ui.View):
     def get_options(self):
         options = [option.strip() for option in self.options_str.split("|")]
         self.select_options = list()
+
         for option in options:
             option = [i.strip() for i in option.split(":")]
             self.select_options.append(
@@ -96,6 +99,7 @@ class PollView(disnake.ui.View):
                     label=option[0], description=self._get_index(option, 1)
                 )
             )
+
         self.select_option_votes = Counter(
             {option: 0 for option in self.select_options}
         )
