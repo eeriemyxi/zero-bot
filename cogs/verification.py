@@ -1,3 +1,5 @@
+from contextlib import suppress
+
 import disnake
 from disnake.ext import commands
 from bot import ZeroBot
@@ -97,9 +99,10 @@ class Verification(commands.Cog):
 
         for channel in inter.guild.text_channels + inter.guild.voice_channels:
             if channel.id != self.v_channel_id:
-                await channel.set_permissions(
-                    role, view_channel=False, send_messages=False
-                )
+                with suppress(Exception):
+                    await channel.set_permissions(
+                        role, view_channel=False, send_messages=False
+                    )
 
         await inter.edit_original_message(
             content=f"Done. This role now is only visible to <#{self.v_channel_id}>"
