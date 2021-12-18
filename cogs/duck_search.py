@@ -22,12 +22,14 @@ class DuckDuckGoSearch(commands.Cog):
         await inter.response.defer()
         results = await asearch(query)
         embeds = list()
+
         with suppress(ValueError):
             async for result in results:
                 embed = disnake.Embed(
                     title=result.title, url=result.url, description=result.description
                 )
                 embeds.append(embed)
+
         paginator = Paginator(inter, embeds)
         await inter.edit_original_message(embed=paginator.current_embed, view=paginator)
 

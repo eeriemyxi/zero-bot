@@ -2,3 +2,4 @@ ddg-scraper
 disnake
 python-dotenv
 disnake-jishaku
+aiohttp
