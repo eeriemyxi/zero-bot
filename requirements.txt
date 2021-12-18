@@ -2,5 +2,5 @@ ddg-scraper
 disnake
 python-dotenv
 disnake-jishaku
-aiohttp
+httpx
 deta[async]==1.1.0a1
