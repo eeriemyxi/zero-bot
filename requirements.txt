@@ -3,3 +3,4 @@ disnake
 python-dotenv
 disnake-jishaku
 aiohttp
+deta[async]==1.1.0a1
