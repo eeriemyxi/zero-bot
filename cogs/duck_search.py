@@ -1,9 +1,9 @@
+from contextlib import suppress
+
 import disnake
 from ddg_scraper import asearch
 from disnake.ext import commands
 from ext.paginator import Paginator
-
-from contextlib import suppress
 
 
 class DuckDuckGoSearch(commands.Cog):

@@ -2,9 +2,9 @@
 This one is against the TOS. It uses a different bot's messages because I am lazy.
 """
 from os import getenv
+from asyncio import sleep
+from random import uniform
 
-import disnake
-import httpx
 from disnake.ext import commands
 
 
@@ -24,12 +24,12 @@ class AutoBump(commands.Cog):
             self.reminder_bot_id,
         ):
             if any(self.role_id == role.id for role in message.role_mentions):
-                async with httpx.AsyncClient() as session:
-                    await session.post(
-                        url=self.url % self.channel_id,
-                        headers=dict(authorization=self.token),
-                        json={"content": "!d bump", "content-type": "application/json"},
-                    )
+                await sleep(uniform(5.0, 10.0))
+                await self.bot.session.post(
+                    url=self.url % self.channel_id,
+                    headers=dict(authorization=self.token),
+                    json={"content": "!d bump", "content-type": "application/json"},
+                )
 
 
 def setup(bot):

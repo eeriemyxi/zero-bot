@@ -1,8 +1,8 @@
 from contextlib import suppress
 
 import disnake
-from disnake.ext import commands
 from bot import ZeroBot
+from disnake.ext import commands
 
 
 class VerificationSelect(disnake.ui.Select):

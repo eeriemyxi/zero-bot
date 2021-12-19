@@ -6,7 +6,7 @@ A private bot for my friend's discord server.
 
 ## Commands
 
-Currently it has 3 commands.
+Currently it has 4 commands.
 
 - Poll
 - Websearch
