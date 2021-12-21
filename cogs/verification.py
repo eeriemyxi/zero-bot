@@ -131,5 +131,5 @@ class Verification(commands.Cog):
         await inter.edit_original_message(content="Done.")
 
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Verification(bot))
+# def setup(bot: commands.Bot):
+#     bot.add_cog(Verification(bot))

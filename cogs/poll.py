@@ -125,5 +125,5 @@ class Poll(commands.Cog):
         )
 
 
-def setup(bot):
-    bot.add_cog(Poll(bot))
+# def setup(bot):
+#     bot.add_cog(Poll(bot))

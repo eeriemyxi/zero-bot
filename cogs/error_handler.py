@@ -9,5 +9,5 @@ class ErrorHandler(commands.Cog):
     async def on_command_error(self, ctx, error):
         raise error
 
-def setup(bot):
-    bot.add_cog(ErrorHandler(bot))
+# def setup(bot):
+#     bot.add_cog(ErrorHandler(bot))

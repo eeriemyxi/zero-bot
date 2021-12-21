@@ -6,7 +6,7 @@ from disnake.ext import commands
 from ext.paginator import Paginator
 
 
-class DuckDuckGoSearch(commands.Cog):
+class DuckSearch(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -34,5 +34,5 @@ class DuckDuckGoSearch(commands.Cog):
         await inter.edit_original_message(embed=paginator.current_embed, view=paginator)
 
 
-def setup(bot):
-    bot.add_cog(DuckDuckGoSearch(bot))
+# def setup(bot):
+#     bot.add_cog(DuckDuckGoSearch(bot))

@@ -8,7 +8,7 @@ from random import uniform
 from disnake.ext import commands
 
 
-class AutoBump(commands.Cog):
+class AutoBumping(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.reminder_bot_id = 735147814878969968
@@ -32,5 +32,5 @@ class AutoBump(commands.Cog):
                 )
 
 
-def setup(bot):
-    bot.add_cog(AutoBump(bot))
+# def setup(bot):
+#     bot.add_cog(AutoBump(bot))

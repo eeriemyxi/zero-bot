@@ -6,6 +6,7 @@ from deta import Deta
 from disnake import Embed, Intents, Webhook
 from disnake.ext import commands
 from dotenv import load_dotenv
+from loader import Loader
 
 load_dotenv()
 
@@ -32,11 +33,9 @@ class ZeroBot(commands.Bot):
 
 bot = ZeroBot(command_prefix=".", test_guilds=[849636268832325642, 858720379069136896], intents=Intents.all())
 bot.load_extension("jishaku")
+loader = Loader(bot, "cogs")
 COG_BLACKLIST = []
 
-for cog in iter_modules(["cogs"]):
-    if cog.name not in COG_BLACKLIST:
-        bot.load_extension(f"cogs.{cog.name}")
-        print(f"Loaded cog: {cog.name}")
 
+loader.load_cogs()
 bot.run(token=getenv("TOKEN"))
