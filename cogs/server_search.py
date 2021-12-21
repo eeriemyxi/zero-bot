@@ -113,6 +113,3 @@ class ServerSearch(commands.Cog):
         paginator = Paginator(inter, embeds)
         await inter.followup.send(embed=paginator.current_embed, view=paginator)
 
-
-# def setup(bot):
-#     bot.add_cog(ServerSearch(bot))

@@ -129,7 +129,3 @@ class Verification(commands.Cog):
             await self.db.put(str(msg.id), "v_message")
 
         await inter.edit_original_message(content="Done.")
-
-
-# def setup(bot: commands.Bot):
-#     bot.add_cog(Verification(bot))

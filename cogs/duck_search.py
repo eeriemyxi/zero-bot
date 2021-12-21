@@ -32,7 +32,3 @@ class DuckSearch(commands.Cog):
 
         paginator = Paginator(inter, embeds)
         await inter.edit_original_message(embed=paginator.current_embed, view=paginator)
-
-
-# def setup(bot):
-#     bot.add_cog(DuckDuckGoSearch(bot))

@@ -123,7 +123,3 @@ class Poll(commands.Cog):
         poll_view.message = await inter.edit_original_message(
             content=f">>> **{question}**", embed=poll_view.get_embed(), view=poll_view
         )
-
-
-# def setup(bot):
-#     bot.add_cog(Poll(bot))

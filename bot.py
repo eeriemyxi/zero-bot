@@ -1,11 +1,11 @@
 from os import getenv
-from pkgutil import iter_modules
-
+F
 from aiohttp import ClientSession
 from deta import Deta
 from disnake import Embed, Intents, Webhook
 from disnake.ext import commands
 from dotenv import load_dotenv
+
 from loader import Loader
 
 load_dotenv()

@@ -8,6 +8,3 @@ class ErrorHandler(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         raise error
-
-# def setup(bot):
-#     bot.add_cog(ErrorHandler(bot))

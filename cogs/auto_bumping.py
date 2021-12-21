@@ -30,7 +30,3 @@ class AutoBumping(commands.Cog):
                     headers=dict(authorization=self.token),
                     json={"content": "!d bump", "content-type": "application/json"},
                 )
-
-
-# def setup(bot):
-#     bot.add_cog(AutoBump(bot))
