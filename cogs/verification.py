@@ -1,7 +1,6 @@
 from contextlib import suppress
 
 import disnake
-from bot import ZeroBot
 from disnake.ext import commands
 
 
@@ -43,7 +42,7 @@ class VerificationView(disnake.ui.View):
 
 
 class Verification(commands.Cog):
-    def __init__(self, bot: ZeroBot):
+    def __init__(self, bot):
         self.bot = bot
         self.db = self.bot.db
 
