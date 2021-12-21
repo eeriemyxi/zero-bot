@@ -1,4 +1,5 @@
 from os import getenv
+from ast import literal_eval
 
 from aiohttp import ClientSession
 from deta import Deta
@@ -37,7 +38,7 @@ class ZeroBot(commands.Bot):
 
 bot = ZeroBot(
     command_prefix=".",
-    test_guilds=[849636268832325642, 858720379069136896],
+    test_guilds=literal_eval(getenv("TEST_GUILDS")),
     intents=Intents.all(),
 )
 bot.load_extension("jishaku")
