@@ -12,6 +12,7 @@ class MessageFilter(commands.Cog):
         self.channels = literal_eval(getenv("FILTER_CHANNELS"))
         self.toggle = literal_eval(getenv("FILTER_TOGGLE"))
         self.seconds = literal_eval(getenv("FILTER_SECONDS"))
+        self.whitelist = literal_eval(getenv("FILTER_WHITELIST_MESSAGES"))
 
         if self.toggle is False:
             self.bot.remove_listener(self.on_message)
@@ -19,6 +20,9 @@ class MessageFilter(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, msg):
         if msg.channel.id in self.channels:
+            if any(cont.lower() in msg.content.lower() for cont in self.whitelist):
+                return
+
             if msg.author.id in self.authors:
                 await sleep(self.seconds)
                 await msg.delete()
