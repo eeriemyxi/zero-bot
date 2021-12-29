@@ -19,14 +19,14 @@ class MessageFilter(commands.Cog):
         if self.toggle is False:
             self.bot.remove_listener(self.on_message)
 
-    def parse_message_content(self, msg: disnake.Message):
+    def parse_message_content(self, msg: disnake.Message) -> str:
         embed = msg.embeds
 
         if embed:
             cont = msg.content, embed[0].title, embed[0].description
         else:
-            cont = msg.content
-
+            cont = [msg.content]
+       
         return "\n".join(map(str.lower, cont))
 
     @commands.Cog.listener()
