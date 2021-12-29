@@ -1,3 +1,4 @@
+import disnake
 from disnake.ext import commands
 from os import getenv
 from ast import literal_eval
@@ -17,10 +18,23 @@ class MessageFilter(commands.Cog):
         if self.toggle is False:
             self.bot.remove_listener(self.on_message)
 
+    def parse_message_content(self, msg: disnake.Message):
+        embed = msg.embeds
+
+        if embed:
+            cont = msg.content, embed[0].title, embed[0].description
+        else:
+            cont = msg.content
+
+        return "\n".join(map(str.lower, cont))
+
     @commands.Cog.listener()
     async def on_message(self, msg):
         if msg.channel.id in self.channels:
-            if any(cont.lower() in msg.content.lower() for cont in self.whitelist):
+            if any(
+                cont.lower() in self.parse_message_content(msg)
+                for cont in self.whitelist
+            ):
                 return
 
             if msg.author.id in self.authors:
