@@ -23,10 +23,11 @@ class MessageFilter(commands.Cog):
         embed = msg.embeds
 
         if embed:
-            cont = msg.content, embed[0].title, embed[0].description
+            embed = embed[0].to_dict()
+            cont = msg.content, embed.get("title", ""), embed.get("description", "")
         else:
             cont = [msg.content]
-       
+
         return "\n".join(map(str.lower, cont))
 
     @commands.Cog.listener()
