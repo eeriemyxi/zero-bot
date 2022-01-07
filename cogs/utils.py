@@ -9,7 +9,6 @@ class Utils(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.tokens = parse_env_data(environ.get("USER_TOKENS"))
-        print(self.tokens)
     
     @commands.command(aliases=["up"])
     async def userphone(self, ctx):
@@ -19,7 +18,6 @@ class Utils(commands.Cog):
     @commands.is_owner()
     @commands.command()
     async def send(self, ctx, user: str, *, content: str):
-        print("works")
         for username in self.tokens:
             if username.startswith(user):
                 with suppress(Exception):
