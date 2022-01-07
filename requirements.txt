@@ -3,4 +3,4 @@ disnake
 python-dotenv
 disnake-jishaku
 httpx
-deta[async]==1.1.0a
+deta[async]==1.1.0a1
