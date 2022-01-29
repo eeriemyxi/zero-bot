@@ -19,7 +19,7 @@ class Utils(commands.Cog):
             for username in self.tokens:
                 with suppress(Exception):
                     await send_message(self.bot.session, ctx.channel.id, self.tokens[username], content)
-                    await sleep(2)
+                    await sleep(1)
             return
 
         for username in self.tokens:

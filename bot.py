@@ -20,9 +20,9 @@ class ZeroBot(commands.Bot):
         self.reminder_db = self.deta.AsyncBase("reminder_db")
         self.pers_views = False
         self.already_started = False
-        self.session = ClientSession()
 
     async def on_ready(self):
+        self.session = ClientSession()
         print(f"{self.user.name} is ready.")
         if not self.already_started:
             self.webhook = Webhook.from_url(

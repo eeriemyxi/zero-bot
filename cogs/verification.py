@@ -21,7 +21,7 @@ class VerificationSelect(disnake.ui.Select):
     async def callback(self, inter: disnake.MessageInteraction):
         if self.values[0] == self.YES:
             role_id = int((await self.db.get("v_role"))["value"])
-            await self.db.put({"members": []}, "verified")
+            # await self.db.put({"members": []}, "verified")
             await self.db.update(
                 {"members": self.db.util.append(str(inter.author.id))}, "verified"
             )
@@ -50,12 +50,12 @@ class Verification(commands.Cog):
     async def on_ready(self):
         if not self.bot.pers_views:
             self.bot.add_view(VerificationView(self.db))
-
-            if await self.channel_check():
-                channel = self.bot.get_channel(int(self.v_channel_id["value"]))
-                message_id = await self.db.get("v_message")
-                message = await channel.fetch_message(int(message_id["value"]))
-                await message.edit(view=VerificationView(self.db))
+            with suppress(Exception):
+                if await self.channel_check():
+                    channel = self.bot.get_channel(int(self.v_channel_id["value"]))
+                    message_id = await self.db.get("v_message")
+                    message = await channel.fetch_message(int(message_id["value"]))
+                    await message.edit(view=VerificationView(self.db))
 
             self.bot.pers_views = True
             print("Verification view has been loaded.")
@@ -63,7 +63,7 @@ class Verification(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         role = await self.db.get("v_role")
-        if role is not None:
+        if role is not None and member.bot is False:
             await member.add_roles(member.guild.get_role(int(role["value"])))
 
     async def channel_check(self):
@@ -80,16 +80,15 @@ class Verification(commands.Cog):
         await self.db.put(str(channel.id), "v_channel")
 
         await inter.edit_original_message(
-            content=f"Alright, done. I set the verification channel to {channel.mention}. \
-                    Use the `update_message` sub command to send or update the message."
+            content=f"Alright, done. I set the verification channel to {channel.mention}. Use the `update_message` sub command to send or update the message."
         )
 
     @verification.sub_command()
     async def create_role(self, inter, role_name: str):
-        if await self.channel_check() is False:
-            return
-        else:
+        if await self.channel_check() is True:
             self.v_channel_id = int(self.v_channel_id["value"])
+        else:
+            return
 
         await inter.response.defer()
         role = await inter.guild.create_role(
@@ -112,10 +111,10 @@ class Verification(commands.Cog):
     async def update_message(self, inter, content: str):
         await inter.response.defer()
 
-        if await self.channel_check() is False:
-            return
-        else:
+        if await self.channel_check() is True:
             self.v_channel_id = int(self.v_channel_id["value"])
+        else:
+            return
 
         message_id = await self.db.get("v_message")
         channel = self.bot.get_channel(self.v_channel_id)
