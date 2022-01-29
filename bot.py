@@ -17,8 +17,10 @@ class ZeroBot(commands.Bot):
         super().__init__(*args, **kwargs)
         self.deta = Deta(getenv("KEY"))
         self.db = self.deta.AsyncBase("db")
+        self.reminder_db = self.deta.AsyncBase("reminder_db")
         self.pers_views = False
         self.already_started = False
+        self.session = ClientSession()
 
     async def on_ready(self):
         print(f"{self.user.name} is ready.")
@@ -30,10 +32,6 @@ class ZeroBot(commands.Bot):
                 embed=Embed(title=self.user.name, description="Bot started.")
             )
             self.already_started = True
-
-    async def start(self, *args, **kwargs):
-        async with ClientSession() as self.session:
-            await super().start(*args, **kwargs)
 
 
 bot = ZeroBot(
