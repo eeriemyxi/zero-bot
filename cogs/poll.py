@@ -80,7 +80,7 @@ class PollView(disnake.ui.View):
             )
         return embed
 
-    def _get_index(self, l, index):
+    def _get_index(self, l: list, index: int):
         try:
             return l[index]
         except IndexError:

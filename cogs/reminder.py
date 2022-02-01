@@ -21,11 +21,11 @@ class ReminderMessageView(disnake.ui.View):
     async def remind_me(self, _, inter: disnake.MessageInteraction):
         self.reacted_users.add(inter.author.id)
 
-        reminder = await self.bot.reminder_db.get(self.db_id)
+        reminder = await self.bot.reminder_db.get(self.rmd_id)
         if str(inter.author.id) not in reminder["users"]:
             await self.bot.reminder_db.update(
                 dict(users=self.bot.reminder_db.util.append(str(inter.author.id))),
-                key=self.db_id,
+                key=self.rmd_id,
             )
 
         await inter.send(
@@ -44,28 +44,40 @@ class Reminder(commands.Cog):
     @tasks.loop(count=1)
     async def load_reminders(self):
         reminders = await self.bot.reminder_db.fetch()
+        rmd_coros = []
 
         for reminder in reminders.items:
-            if not reminder["key"] == "channel":
-                print(reminder)
-                remaining = reminder["time"] - time.time()
+            rmd = self.load_reminder(reminder)
+            rmd_coros.append(rmd)
 
-                if remaining > 0:
-                    remind_view = ReminderMessageView(self.bot)
-                    remind_view.db_id = reminder["key"]
-                    self.bot.add_view(remind_view)
-
-                    channel = self.bot.get_channel(int(reminder["channel"]))
-                    msg = await channel.fetch_message(reminder["key"])
-
-                    await msg.edit(view=remind_view)
-                    await asyncio.sleep(remaining)
-
-                await self.text_users(reminder["key"], reminder["users"])
+        await asyncio.gather(*rmd_coros)
 
     @load_reminders.before_loop
     async def before_loading_reminders(self):
         await self.bot.wait_until_ready()
+
+    async def load_reminder(self, reminder: dict):
+        if not reminder["key"] == "channel":
+            remaining: int = reminder["time"] - time.time()
+            print(
+                *[f"{x.replace('_', ' ').title()}: {reminder[x]}" for x in reminder],
+                sep="\n",
+            )
+            print(f"Remaining time for {reminder['title']}: {remaining} seconds.\n\n")
+
+            if remaining > 0:
+                remind_view = ReminderMessageView(self.bot)
+                remind_view.rmd_id = reminder["key"]
+                self.bot.add_view(remind_view)
+
+                channel = self.bot.get_channel(int(reminder["channel"]))
+                msg = await channel.fetch_message(reminder["key"])
+
+                await msg.edit(view=remind_view)
+                remaining = await self.anticipate(reminder["key"], remaining)
+                await asyncio.sleep(remaining)
+
+            await self.text_users(reminder["key"])
 
     @commands.slash_command()
     async def publicremind(self, _):
@@ -81,8 +93,8 @@ class Reminder(commands.Cog):
         inter: disnake.CommandInteraction,
         title: str,
         message: str,
-        seconds: int,
         ping_role: disnake.Role = None,
+        seconds: int = 0,
         days: int = 0,
         hours: int = 0,
         minutes: int = 0,
@@ -99,13 +111,6 @@ class Reminder(commands.Cog):
         """
         await inter.response.defer(ephemeral=True)
 
-        # I dont think we need this, but imma keep it for now.
-        # If its useless, imma push a commit where its removed.
-        # -----------------------------------------------------
-        # allowed = await self.bot.reminder_db.get("allowed")
-        # if not any(x.id in allowed for x in inter.author.roles[1:]):
-        #     await inter.send("You're not allowed to use this command.")
-
         self.remind_view = ReminderMessageView(self.bot)
         self.time = 86400 * days + 3600 * hours + 60 * minutes + seconds
 
@@ -116,31 +121,34 @@ class Reminder(commands.Cog):
             ),
             view=self.remind_view,
         )
-        db_id = str(reminder_msg.id)
-        self.remind_view.db_id = db_id
+        rmd_id = str(reminder_msg.id)
+        self.remind_view.rmd_id = rmd_id
         await self.bot.reminder_db.put(
             dict(
-                time=time.time() + self.time,
+                time=int(time.time() + self.time),
+                author=str(inter.author.id),
                 creation_time=int(time.time()),
                 title=title,
                 message=message,
                 channel=str(inter.channel.id),
                 users=[],
             ),
-            key=db_id,
+            key=rmd_id,
         )
         await inter.send(content="Message sent.")
+        remaining = await self.anticipate(rmd_id, self.time)
+        await asyncio.sleep(remaining)
 
-        await asyncio.sleep(self.time)
-        await self.text_users(db_id, self.remind_view.reacted_users)
+        await self.text_users(rmd_id)
 
-    async def text_users(self, db_id: str, users: list[str | int]):
-        for user in users:
+    async def text_users(self, rmd_id: str):
+        reminder = await self.bot.reminder_db.get(rmd_id)
+
+        for user in reminder["users"]:
             user = self.bot.get_user(int(user))
-            reminder = await self.bot.reminder_db.get(db_id)
             embed = disnake.Embed(
                 title=reminder["title"],
-                description="Hey, {user.mention}!\n<t:{creation}:R> someone in Zero Inc set a reminder for **{title}**. So I reminded you about it because you asked me to.".format(
+                description="Hey, {user.mention}!\n<t:{creation}:R> someone in Zero Inc. set a reminder for **{title}**. So I reminded you about it because you asked me to.".format(
                     user=user,
                     creation=reminder["creation_time"],
                     title=reminder["title"],
@@ -157,8 +165,27 @@ class Reminder(commands.Cog):
 
         channel = self.bot.get_channel(int(reminder["channel"]))
         msg = await channel.fetch_message(reminder["key"])
-        await self.bot.reminder_db.delete(db_id)
+        await self.bot.reminder_db.delete(rmd_id)
         await msg.edit(view=None)
+    
+    async def anticipate(self, rmd_id, time: int):
+        if time > 7200:
+            await asyncio.sleep(time - 7200)
+            reminder = await self.bot.reminder_db.get(rmd_id)
+            for user in reminder["users"]:
+                user = self.bot.get_user(int(user))
+                await user.send("Hey {user.mention}, **{title}** is in 2 hours. Be prepared.".format(user=user, title=reminder["title"]))
+                time = 7200
+
+        if time > 1800:
+            await asyncio.sleep(time - 1800)
+            reminder = await self.bot.reminder_db.get(rmd_id)
+            for user in reminder["users"]:
+                user = self.bot.get_user(int(user))
+                await user.send("Hey {user.mention}, **{title}** is in 30 minutes. Be prepared.".format(user=user, title=reminder["title"]))
+                time = 1800
+
+        return time
 
     @publicremind.sub_command()
     async def set_backup_channel(
