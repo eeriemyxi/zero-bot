@@ -138,7 +138,6 @@ class Reminder(commands.Cog):
         await inter.send(content="Message sent.")
         remaining = await self.anticipate(rmd_id, self.time)
         await asyncio.sleep(remaining)
-
         await self.text_users(rmd_id)
 
     async def text_users(self, rmd_id: str):
@@ -167,25 +166,52 @@ class Reminder(commands.Cog):
         msg = await channel.fetch_message(reminder["key"])
         await self.bot.reminder_db.delete(rmd_id)
         await msg.edit(view=None)
-    
+
     async def anticipate(self, rmd_id, time: int):
         if time > 7200:
             await asyncio.sleep(time - 7200)
             reminder = await self.bot.reminder_db.get(rmd_id)
+
             for user in reminder["users"]:
                 user = self.bot.get_user(int(user))
-                await user.send("Hey {user.mention}, **{title}** is in 2 hours. Be prepared.".format(user=user, title=reminder["title"]))
+                await self.safe_send(
+                    user,
+                    self.bot.get_channel(int(reminder["channel"])),
+                    "Hey {user.mention}, **{title}** is in 2 hours. Be prepared.".format(
+                        user=user, title=reminder["title"]
+                    ),
+                )
                 time = 7200
 
         if time > 1800:
             await asyncio.sleep(time - 1800)
             reminder = await self.bot.reminder_db.get(rmd_id)
+
             for user in reminder["users"]:
                 user = self.bot.get_user(int(user))
-                await user.send("Hey {user.mention}, **{title}** is in 30 minutes. Be prepared.".format(user=user, title=reminder["title"]))
+                await self.safe_send(
+                    user,
+                    self.bot.get_channel(int(reminder["channel"])),
+                    "Hey {user.mention}, **{title}** is in 30 minutes. Be prepared.".format(
+                        user=user, title=reminder["title"]
+                    ),
+                )
                 time = 1800
 
         return time
+
+    async def safe_send(
+        self,
+        user: disnake.User | disnake.Member,
+        channel: disnake.TextChannel,
+        content: str,
+    ):
+        """Tries to send a message to the user and if it fails, it will try to send it to the channel."""
+        try:
+            await user.send(content)
+        except Exception:
+            with suppress(Exception):
+                await channel.send(content)
 
     @publicremind.sub_command()
     async def set_backup_channel(
