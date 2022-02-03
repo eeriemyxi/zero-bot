@@ -112,4 +112,3 @@ class ServerSearch(commands.Cog):
             return
         paginator = Paginator(inter, embeds)
         await inter.followup.send(embed=paginator.current_embed, view=paginator)
-

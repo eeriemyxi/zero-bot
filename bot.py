@@ -38,6 +38,7 @@ bot = ZeroBot(
     command_prefix=".",
     test_guilds=literal_eval(getenv("TEST_GUILDS")),
     intents=Intents.all(),
+    owner_id=598134630104825856
 )
 bot.load_extension("jishaku")
 loader = Loader(bot, "cogs")

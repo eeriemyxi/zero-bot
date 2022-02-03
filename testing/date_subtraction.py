@@ -27,9 +27,12 @@
 
 import asyncio
 
+
 async def main():
-    async def hi(): return 10
+    async def hi():
+        return 10
 
     print(await asyncio.gather(*[hi() for _ in range(10)]))
+
 
 asyncio.run(main())

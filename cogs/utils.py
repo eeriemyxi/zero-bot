@@ -35,7 +35,7 @@ class Utils(commands.Cog):
     @commands.command()
     @commands.has_guild_permissions(manage_messages=True)
     async def expel(self, ctx: commands.Context, mode: str, amount: int = 100, *args):
-        PREFIXES = tuple(string.punctuation) + ("ch!", "m!", "s.", "bday", "₹", "pls")
+        PREFIXES = tuple(string.punctuation) + ("ch!", "m!", "s.", "bday", "₹", "pls", "owo")
 
         match mode:
             case "bots" | "bot":
@@ -45,7 +45,7 @@ class Utils(commands.Cog):
                     check=lambda msg: msg.content.lower().startswith(PREFIXES),
                     limit=amount,
                 )
-            case "bot&cmds" | "b&c" | "bc":
+            case "bot&cmds" | "bot&cmd" | "b&c" | "bc":
                 await ctx.channel.purge(
                     check=lambda msg: msg.content.lower().startswith(PREFIXES)
                     or msg.author.bot,

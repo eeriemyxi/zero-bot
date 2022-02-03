@@ -52,9 +52,7 @@ class PollView(disnake.ui.View):
         self.options_str = options
         self.message: disnake.Message
         self.add_item(
-            PollSelect(
-                placeholder="Select poll option", options=self.get_options()
-            )
+            PollSelect(placeholder="Select poll option", options=self.get_options())
         )
 
     def get_votes(self, label):
