@@ -35,21 +35,28 @@ class Utils(commands.Cog):
     @commands.command()
     @commands.has_guild_permissions(manage_messages=True)
     async def expel(self, ctx: commands.Context, mode: str, amount: int = 100, *args):
-        PREFIXES = tuple(string.punctuation) + ("ch!", "m!", "s.", "bday", "₹")
+        PREFIXES = tuple(string.punctuation) + ("ch!", "m!", "s.", "bday", "₹", "pls")
 
         match mode:
             case "bots" | "bot":
                 await ctx.channel.purge(check=lambda msg: msg.author.bot)
             case "commands" | "cmd" | "cmds":
                 await ctx.channel.purge(
-                    check=lambda msg: msg.content.startswith(PREFIXES), limit=amount
+                    check=lambda msg: msg.content.lower().startswith(PREFIXES),
+                    limit=amount,
                 )
             case "bot&cmds" | "b&c" | "bc":
                 await ctx.channel.purge(
-                    check=lambda msg: msg.content.startswith(PREFIXES) or msg.author.bot, limit=amount
+                    check=lambda msg: msg.content.lower().startswith(PREFIXES)
+                    or msg.author.bot,
+                    limit=amount,
                 )
             case "self":
-                await ctx.channel.purge(check=lambda msg: msg.author == self.bot.user, bulk=False, limit=amount)
-        
+                await ctx.channel.purge(
+                    check=lambda msg: msg.author == self.bot.user,
+                    bulk=False,
+                    limit=amount,
+                )
+
         with suppress(Exception):
             await ctx.message.delete()
