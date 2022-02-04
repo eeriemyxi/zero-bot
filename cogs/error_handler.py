@@ -10,7 +10,7 @@ class ErrorHandler(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         match error:
-            case commands.CommandNotFound():
+            case commands.CommandNotFound() | commands.MissingRequiredArgument():
                 return
             case _:
                 await ctx.send(
