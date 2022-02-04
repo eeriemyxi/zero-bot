@@ -13,8 +13,10 @@ class ErrorHandler(commands.Cog):
             case commands.CommandNotFound():
                 return
             case _:
-                await ctx.send("An uncaught exception has occurred. The developer who is responsible for the error has been cautioned.")
-                
+                await ctx.send(
+                    "An uncaught exception has occurred. The developer who is responsible for the error has been cautioned."
+                )
+
                 tb = "".join(traceback.format_exception(error))
 
                 user = self.bot.get_user(self.bot.owner_id)

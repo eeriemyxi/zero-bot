@@ -1,11 +1,46 @@
 from asyncio import sleep
 from contextlib import suppress
 from os import environ
-import string
 
 import disnake
 from disnake.ext import commands
 from ext.utils import parse_env_data, send_message
+
+
+PREFIXES = (
+    "!",
+    "#",
+    "$",
+    "%",
+    "&",
+    "(",
+    ")",
+    "*",
+    "+",
+    ",",
+    "-",
+    ".",
+    "/",
+    ";",
+    "=",
+    ">",
+    "?",
+    "[",
+    "\\",
+    "]",
+    "^",
+    "{",
+    "|",
+    "}",
+    "~",
+    "₹",
+    "ch!",
+    "m!",
+    "s.",
+    "bday",
+    "pls",
+    "owo",
+)
 
 
 class Utils(commands.Cog):
@@ -35,8 +70,6 @@ class Utils(commands.Cog):
     @commands.command()
     @commands.has_guild_permissions(manage_messages=True)
     async def expel(self, ctx: commands.Context, mode: str, amount: int = 100, *args):
-        PREFIXES = tuple(string.punctuation) + ("ch!", "m!", "s.", "bday", "₹", "pls", "owo")
-
         match mode:
             case "bots" | "bot":
                 await ctx.channel.purge(check=lambda msg: msg.author.bot)
