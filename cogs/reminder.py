@@ -7,10 +7,12 @@ from disnake.ext import commands, tasks
 
 
 class ReminderMessageView(disnake.ui.View):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: commands.Bot, cog: commands.Cog):
         super().__init__(timeout=None)
         self.bot = bot
+        self.cog = cog
         self.reacted_users: set[int] = set()
+        self.rmd_id: str
 
     @disnake.ui.button(
         label="Remind me",
@@ -66,7 +68,7 @@ class Reminder(commands.Cog):
             print(f"Remaining time for {reminder['title']}: {remaining} seconds.\n\n")
 
             if remaining > 0:
-                remind_view = ReminderMessageView(self.bot)
+                remind_view = ReminderMessageView(self.bot, self)
                 remind_view.rmd_id = reminder["key"]
                 self.bot.add_view(remind_view)
 
@@ -111,7 +113,7 @@ class Reminder(commands.Cog):
         """
         await inter.response.defer(ephemeral=True)
 
-        self.remind_view = ReminderMessageView(self.bot)
+        self.remind_view = ReminderMessageView(self.bot, self)
         self.time = 86400 * days + 3600 * hours + 60 * minutes + seconds
 
         reminder_msg = await inter.channel.send(
@@ -171,12 +173,13 @@ class Reminder(commands.Cog):
         if time > 7200:
             await asyncio.sleep(time - 7200)
             reminder = await self.bot.reminder_db.get(rmd_id)
+            channel_id = await self.bot.reminder_db.get("channel")
 
             for user in reminder["users"]:
                 user = self.bot.get_user(int(user))
                 await self.safe_send(
                     user,
-                    self.bot.get_channel(int(reminder["channel"])),
+                    self.bot.get_channel(int(channel_id["value"])),
                     "Hey {user.mention}, **{title}** is in 2 hours. Be prepared.".format(
                         user=user, title=reminder["title"]
                     ),
@@ -186,12 +189,13 @@ class Reminder(commands.Cog):
         if time > 1800:
             await asyncio.sleep(time - 1800)
             reminder = await self.bot.reminder_db.get(rmd_id)
+            channel_id = await self.bot.reminder_db.get("channel")
 
             for user in reminder["users"]:
                 user = self.bot.get_user(int(user))
                 await self.safe_send(
                     user,
-                    self.bot.get_channel(int(reminder["channel"])),
+                    self.bot.get_channel(int(channel_id["value"])),
                     "Hey {user.mention}, **{title}** is in 30 minutes. Be prepared.".format(
                         user=user, title=reminder["title"]
                     ),
