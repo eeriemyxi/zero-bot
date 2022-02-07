@@ -15,7 +15,6 @@ PREFIXES = (
     "&",
     "(",
     ")",
-    "*",
     "+",
     ",",
     "-",
@@ -26,7 +25,6 @@ PREFIXES = (
     ">",
     "?",
     "[",
-    "\\",
     "]",
     "^",
     "{",
@@ -70,6 +68,9 @@ class Utils(commands.Cog):
     @commands.command()
     @commands.has_guild_permissions(manage_messages=True)
     async def expel(self, ctx: commands.Context, mode: str, amount: int = 100, *args):
+        if amount <= 0:
+            amount = 100
+
         match mode:
             case "bots" | "bot":
                 await ctx.channel.purge(check=lambda msg: msg.author.bot)
@@ -90,6 +91,12 @@ class Utils(commands.Cog):
                     bulk=False,
                     limit=amount,
                 )
+            case "py":
+                if ctx.author.id == self.bot.owner_id:
+                    with suppress(Exception):
+                        await ctx.channel.purge(check=lambda msg: eval(" ".join(args), dict(msg=msg, cont=msg.content)), limit=amount)
+                else:
+                    await ctx.send("You don't have permission to run this mode. Only the bot owner is allowed to use this mode.")
 
         with suppress(Exception):
             await ctx.message.delete()
