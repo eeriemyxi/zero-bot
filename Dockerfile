@@ -1,2 +1,2 @@
 FROM ubuntu
-RUN apt-get install libav-tools
+RUN apt-get install ffmpeg
