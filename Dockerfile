@@ -1,3 +1,4 @@
+FROM scratch
 RUN apt-get update -qq && apt-get -y install \
       autoconf \
       automake \
