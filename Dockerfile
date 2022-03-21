@@ -1,2 +1,2 @@
-FROM katalonstudio/katalon
-RUN apt-get install ffmpeg
+FROM ubuntu
+RUN apt-get install libav-tools
