@@ -20,4 +20,7 @@ class ErrorHandler(commands.Cog):
                 tb = "".join(traceback.format_exception(error))
 
                 user = self.bot.get_user(self.bot.owner_id)
-                await user.send(f"```py\n{tb}\n```")
+                try:
+                    await user.send(f"```py\n{tb}\n```")
+                except Exception:
+                    raise error
