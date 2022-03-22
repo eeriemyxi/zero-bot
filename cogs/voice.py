@@ -43,6 +43,7 @@ class Voice(commands.Cog):
                 await asyncio.sleep(1)
 
             await self.voice_client.disconnect()
+            del self.voice_client
             await self.bot.loop.run_in_executor(None, os.remove, filename)
 
     async def save_tts(self, text: str, filename: str):
