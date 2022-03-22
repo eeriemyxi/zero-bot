@@ -25,7 +25,7 @@ class Voice(commands.Cog):
 
         if hasattr(self, "voice_client"):
             while self.voice_client.is_playing():
-                await asyncio.sleep(1)
+                await asyncio.sleep(0.5)
 
         filename = f"vc_join_message_{member.id}.mp3"
         voice_channel = after.channel
@@ -40,7 +40,7 @@ class Voice(commands.Cog):
             self.voice_client.play(source)
 
             while self.voice_client.is_playing():
-                await asyncio.sleep(1)
+                await asyncio.sleep(0.5)
 
             await self.voice_client.disconnect()
             del self.voice_client
