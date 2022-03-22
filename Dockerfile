@@ -21,7 +21,7 @@ RUN : \
     && :
 
 # Set python 3.8 env variable
-RUN python3.8 -m venv /venv
+RUN python3.10 -m venv /venv
 ENV PATH=/venv/bin:$PATH
 
 # update and upgrade
