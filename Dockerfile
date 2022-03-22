@@ -33,6 +33,7 @@ RUN apt-get -y update && \
     wget https://bootstrap.pypa.io/get-pip.py && \
     python3 get-pip.py && \
     rm get-pip.py && \
+    pip3 install numpy \
     && \
 
 # Install OpenCV
