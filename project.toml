@@ -1,2 +1,2 @@
 [[build.buildpacks]]
-uri = "heroku/ffmpeg/ffmpeg"
+uri = "heroku/heroku-buildpack-ffmpeg-latest"
