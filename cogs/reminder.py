@@ -37,6 +37,22 @@ class ReminderMessageView(disnake.ui.View):
             ephemeral=True,
         )
 
+    @disnake.ui.button(
+        label="View members who are interested",
+        emoji="👁‍🗨",
+        style=disnake.ButtonStyle.blurple,
+        custom_id="viewrmdmemberbutton"
+    )
+    async def view_members_button(self,  _, inter: disnake.MessageInteraction):
+        reminder = await self.bot.reminder_db.get(self.rmd_id)
+        msg = str()
+
+        for user in reminder["users"]:
+            user = self.bot.get_user(int(user))
+            msg += user.mention + "\n"
+        
+        await inter.send(content="List of members:\n" + msg if msg else "No user is interested for this event yet.", ephemeral=True)
+
 
 class Reminder(commands.Cog):
     def __init__(self, bot: commands.Bot):
