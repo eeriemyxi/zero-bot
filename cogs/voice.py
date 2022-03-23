@@ -39,7 +39,6 @@ class Voice(commands.Cog):
             await self.play(member, voice_channel)
 
             for memb in self.postponed:
-                print(memb)
                 await self.play(memb, voice_channel)
 
             self.postponed.clear()

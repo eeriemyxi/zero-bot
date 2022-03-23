@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import disnake
 from disnake.ext import commands
 
@@ -48,3 +50,16 @@ async def send_message(session, channel_id: int | str, token: str, message: str)
         headers=dict(authorization=token),
         json={"content": message, "content-type": "application/json"},
     )
+
+def get_timestamp(day: int, month: int, year: int, time: str) -> int:
+    hour, minute, second = time.split(":", 3)
+
+    if "+" in hour:
+        hour = int(hour[:-1]) + 12
+    else:
+        hour = int(hour)
+
+    minute, second = int(minute), int(second)
+    dt = datetime(day=day, month=month, year=year, hour=hour, minute=minute, second=second)
+
+    return dt.timestamp()

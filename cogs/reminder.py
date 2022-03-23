@@ -5,6 +5,9 @@ from contextlib import suppress
 import disnake
 from disnake.ext import commands, tasks
 
+from ext.utils import get_timestamp
+from datetime import datetime
+
 
 class ReminderMessageView(disnake.ui.View):
     def __init__(self, bot: commands.Bot, cog: commands.Cog):
@@ -41,17 +44,22 @@ class ReminderMessageView(disnake.ui.View):
         label="View members who are interested",
         emoji="👁‍🗨",
         style=disnake.ButtonStyle.blurple,
-        custom_id="viewrmdmemberbutton"
+        custom_id="viewrmdmemberbutton",
     )
-    async def view_members_button(self,  _, inter: disnake.MessageInteraction):
+    async def view_members_button(self, _, inter: disnake.MessageInteraction):
         reminder = await self.bot.reminder_db.get(self.rmd_id)
         msg = str()
 
         for user in reminder["users"]:
             user = self.bot.get_user(int(user))
             msg += user.mention + "\n"
-        
-        await inter.send(content="List of members:\n" + msg if msg else "No user is interested for this event yet.", ephemeral=True)
+
+        await inter.send(
+            content="List of members:\n" + msg
+            if msg
+            else "No user is interested for this event yet.",
+            ephemeral=True,
+        )
 
 
 class Reminder(commands.Cog):
@@ -76,7 +84,7 @@ class Reminder(commands.Cog):
 
     async def load_reminder(self, reminder: dict):
         if not reminder["key"] == "channel":
-            remaining: int = reminder["time"] - time.time()
+            remaining: int = reminder["time"] - datetime.now().timestamp()
             print(
                 *[f"{x.replace('_', ' ').title()}: {reminder[x]}" for x in reminder],
                 sep="\n",
@@ -111,13 +119,12 @@ class Reminder(commands.Cog):
         inter: disnake.CommandInteraction,
         title: str,
         message: str,
+        day: int,
+        month: int,
+        year: int,
+        _time: str = commands.Param(name="time"),
         ping_role: disnake.Role = None,
-        seconds: int = 0,
-        days: int = 0,
-        hours: int = 0,
-        minutes: int = 0,
     ):
-
         """
         Set new reminder.
 
@@ -130,12 +137,13 @@ class Reminder(commands.Cog):
         await inter.response.defer(ephemeral=True)
 
         self.remind_view = ReminderMessageView(self.bot, self)
-        self.time = 86400 * days + 3600 * hours + 60 * minutes + seconds
+        # self.time = 86400 * days + 3600 * hours + 60 * minutes + seconds
+        self.time = int(get_timestamp(day, month, year, _time))
 
         reminder_msg = await inter.channel.send(
             content=ping_role.mention if ping_role else str(),
             embed=disnake.Embed(title=title, description=message).add_field(
-                name="Time", value=f"<t:{int(time.time() + self.time)}:F>"
+                name="Time", value=f"<t:{self.time}:F>"
             ),
             view=self.remind_view,
         )
@@ -143,7 +151,7 @@ class Reminder(commands.Cog):
         self.remind_view.rmd_id = rmd_id
         await self.bot.reminder_db.put(
             dict(
-                time=int(time.time() + self.time),
+                time=self.time,
                 author=str(inter.author.id),
                 creation_time=int(time.time()),
                 title=title,
@@ -154,7 +162,9 @@ class Reminder(commands.Cog):
             key=rmd_id,
         )
         await inter.send(content="Message sent.")
-        remaining = await self.anticipate(rmd_id, self.time)
+
+        dt = self.time - datetime.now().timestamp()
+        remaining = await self.anticipate(rmd_id, dt)
         await asyncio.sleep(remaining)
         await self.text_users(rmd_id)
 
