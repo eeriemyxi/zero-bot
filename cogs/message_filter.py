@@ -62,7 +62,6 @@ class MessageFilter(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         if not await self.bot.db.get("message_flagging"):
-            self.bot.remove_listener(self.word_filter)
 
     @commands.Cog.listener(name="on_message")
     async def prefix_filter(self, msg: disnake.Message):
@@ -105,7 +104,6 @@ class MessageFilter(commands.Cog):
                 dict(flag_channel=str(flag_channel.id)), "message_flagging"
             )
 
-        self.bot.add_listener(self.word_filter)
         await inter.send("Channel set.")
 
     @flag.sub_command()
