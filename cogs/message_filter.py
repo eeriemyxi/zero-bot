@@ -59,10 +59,6 @@ class MessageFilter(commands.Cog):
 
         return "\n".join(map(str.lower, cont))
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        if not await self.bot.db.get("message_flagging"):
-
     @commands.Cog.listener(name="on_message")
     async def prefix_filter(self, msg: disnake.Message):
         if msg.channel.id in self.channels:
