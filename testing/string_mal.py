@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def get_timestamp(day: int, month: int, year: int, time: str) -> int:
