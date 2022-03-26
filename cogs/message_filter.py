@@ -91,16 +91,19 @@ class MessageFilter(commands.Cog):
         flag_channel: `disnake.TextChannel`
             The channel.
         """
-        if not await self.bot.db.get("message_flagging"):
-            await self.bot.db.put(
-                dict(flag_channel=str(flag_channel.id)), "message_flagging"
-            )
-        else:
-            await self.bot.db.update(
-                dict(flag_channel=str(flag_channel.id)), "message_flagging"
-            )
+        if inter.author.guild_permissions.manage_guild:
+            if not await self.bot.db.get("message_flagging"):
+                await self.bot.db.put(
+                    dict(flag_channel=str(flag_channel.id)), "message_flagging"
+                )
+            else:
+                await self.bot.db.update(
+                    dict(flag_channel=str(flag_channel.id)), "message_flagging"
+                )
 
-        await inter.send("Channel set.")
+            await inter.send("Channel set.")
+        else:
+            await inter.send("You don't have the required permissions.")
 
     @flag.sub_command()
     async def message(self, inter: disnake.CommandInteraction, message: disnake.Message):
