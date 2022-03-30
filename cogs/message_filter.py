@@ -20,7 +20,13 @@ class FlagMessageView(disnake.ui.View):
         self.message = message
         self.bot = bot
 
-        self.add_item(disnake.ui.Button(label="Go to message", style=disnake.ButtonStyle.link, url=self.message.jump_url))
+        self.add_item(
+            disnake.ui.Button(
+                label="Go to message",
+                style=disnake.ButtonStyle.link,
+                url=self.message.jump_url,
+            )
+        )
 
     @disnake.ui.button(label="Stop alarm", style=disnake.ButtonStyle.danger, emoji="🛑")
     async def stop_button(
@@ -32,7 +38,10 @@ class FlagMessageView(disnake.ui.View):
             self.stop_is_pressed = True
             await inter.followup.send("Alarm stopped.")
         else:
-            await inter.followup.send("You need `moderate members` permission to stop the alarm.", ephemeral=True)
+            await inter.followup.send(
+                "You need `moderate members` permission to stop the alarm.",
+                ephemeral=True,
+            )
 
 
 class MessageFilter(commands.Cog):
@@ -106,7 +115,9 @@ class MessageFilter(commands.Cog):
             await inter.send("You don't have the required permissions.")
 
     @flag.sub_command()
-    async def message(self, inter: disnake.CommandInteraction, message: disnake.Message):
+    async def message(
+        self, inter: disnake.CommandInteraction, message: disnake.Message
+    ):
         """
         Flag a message using its message ID.
 
@@ -116,21 +127,30 @@ class MessageFilter(commands.Cog):
             Message ID.
         """
         await inter.response.defer(ephemeral=True)
-    
+
         filtering = await self.bot.db.get("message_flagging")
         flag_channel_id = int(filtering["flag_channel"])
         flag_channel = self.bot.get_channel(flag_channel_id)
         flag_view = FlagMessageView(message=message, bot=self.bot)
 
         embed = disnake.Embed(title="⚠️ Alarm")
-        embed.add_field(name="Message Flagged By", value=f"{inter.author.mention}", inline=False)
-        embed.add_field(name="Message Information", value=f"Creation time: {disnake.utils.format_dt(message.created_at, style='F')}\nAuthor: {message.author.mention}")
-        embed.add_field(name="Message Content", value=f"{message.content}", inline=False)
+        embed.add_field(
+            name="Message Flagged By", value=f"{inter.author.mention}", inline=False
+        )
+        embed.add_field(
+            name="Message Information",
+            value=f"Creation time: {disnake.utils.format_dt(message.created_at, style='F')}\nAuthor: {message.author.mention}",
+        )
+        embed.add_field(
+            name="Message Content", value=f"{message.content}", inline=False
+        )
 
         await inter.followup.send("Message has been flagged.", ephemeral=True)
 
         while not flag_view.stop_is_pressed:
-            msg = await flag_channel.send(content="@everyone", embed=embed, view=flag_view)
+            msg = await flag_channel.send(
+                content="@everyone", embed=embed, view=flag_view
+            )
             await sleep(2.0)
             await msg.delete()
 

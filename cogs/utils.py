@@ -94,9 +94,16 @@ class Utils(commands.Cog):
             case "py":
                 if ctx.author.id == self.bot.owner_id:
                     with suppress(Exception):
-                        await ctx.channel.purge(check=lambda msg: eval(" ".join(args), dict(msg=msg, cont=msg.content)), limit=amount)
+                        await ctx.channel.purge(
+                            check=lambda msg: eval(
+                                " ".join(args), dict(msg=msg, cont=msg.content)
+                            ),
+                            limit=amount,
+                        )
                 else:
-                    await ctx.send("You don't have permission to run this mode. Only the bot owner is allowed to use this mode.")
+                    await ctx.send(
+                        "You don't have permission to run this mode. Only the bot owner is allowed to use this mode."
+                    )
 
         with suppress(Exception):
             await ctx.message.delete()

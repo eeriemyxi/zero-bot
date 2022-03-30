@@ -1,7 +1,8 @@
-from datetime import datetime, timezone
+# from datetime import datetime, timezone
+import arrow
 
 
-def get_timestamp(day: int, month: int, year: int, time: str) -> int:
+def get_timestamp(day: int, month: int, year: int, time: str, timezone: str) -> int:
     hour, minute, second = time.split(":", 3)
 
     if "+" in hour:
@@ -10,6 +11,19 @@ def get_timestamp(day: int, month: int, year: int, time: str) -> int:
         hour = int(hour)
 
     minute, second = int(minute), int(second)
-    dt = datetime(day=day, month=month, year=year, hour=hour, minute=minute, second=second)
+    dt = arrow.Arrow(
+        day=day,
+        month=month,
+        year=year,
+        hour=hour,
+        minute=minute,
+        second=second,
+        timezone=timezone,
+    )
 
-    return dt.timestamp()
+    return dt.int_timestamp
+
+
+# print(get_timestamp(*map(int, input().split()), "Asia/India")
+# )
+print(get_timestamp(1, 1, 2021, "7+:20:0", "Asia/India"))

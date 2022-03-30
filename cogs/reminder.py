@@ -2,11 +2,9 @@ import asyncio
 import time
 from contextlib import suppress
 
+import arrow
 import disnake
 from disnake.ext import commands, tasks
-
-from ext.utils import get_timestamp
-from datetime import datetime
 
 
 class ReminderMessageView(disnake.ui.View):
@@ -84,7 +82,7 @@ class Reminder(commands.Cog):
 
     async def load_reminder(self, reminder: dict):
         if not reminder["key"] == "channel":
-            remaining: int = reminder["time"] - datetime.now().timestamp()
+            remaining: int = reminder["time"] - arrow.utcnow().int_timestamp
             print(
                 *[f"{x.replace('_', ' ').title()}: {reminder[x]}" for x in reminder],
                 sep="\n",
@@ -119,9 +117,6 @@ class Reminder(commands.Cog):
         inter: disnake.CommandInteraction,
         title: str,
         message: str,
-        day: int,
-        month: int,
-        year: int,
         _time: str = commands.Param(name="time"),
         ping_role: disnake.Role = None,
     ):
@@ -133,12 +128,14 @@ class Reminder(commands.Cog):
         title: This will be the title of the message.
         message: This will be the description of the message about this reminder.
         ping_role: Role to ping, it is optional.
+        _time: MMMM DD YYYY HH:mm:ss A | Example: January 01 2022 09:30:45 PM
         """
         await inter.response.defer(ephemeral=True)
 
         self.remind_view = ReminderMessageView(self.bot, self)
-        # self.time = 86400 * days + 3600 * hours + 60 * minutes + seconds
-        self.time = int(get_timestamp(day, month, year, _time))
+        self.time = arrow.get(
+            _time, "MMMM DD YYYY HH:mm:ss A", tzinfo="Asia/Kolkata"
+        ).int_timestamp
 
         reminder_msg = await inter.channel.send(
             content=ping_role.mention if ping_role else str(),
@@ -163,7 +160,7 @@ class Reminder(commands.Cog):
         )
         await inter.send(content="Message sent.")
 
-        dt = self.time - datetime.now().timestamp()
+        dt = self.time - arrow.utcnow().int_timestamp
         remaining = await self.anticipate(rmd_id, dt)
         await asyncio.sleep(remaining)
         await self.text_users(rmd_id)
