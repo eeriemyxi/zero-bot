@@ -4,6 +4,7 @@ python-dotenv
 disnake-jishaku
 httpx
 aiogtts
+arrow
 
 deta[async]==1.1.0a1
 disnake[voice]
