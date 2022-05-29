@@ -21,11 +21,7 @@ class VerificationSelect(disnake.ui.Select):
     async def callback(self, inter: disnake.MessageInteraction):
         if self.values[0] == self.YES:
             role_id = int((await self.db.get("v_role"))["value"])
-            # await self.db.put({"members": []}, "verified")
-            await self.db.update(
-                {"members": self.db.util.append(str(inter.author.id))}, "verified"
-            )
-
+            
             await inter.author.remove_roles(
                 inter.guild.get_role(role_id), reason="Verification successful."
             )
