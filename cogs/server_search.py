@@ -71,6 +71,7 @@ class Search:
     async def get_embeds(self):
         results = self.get_results()
         embeds: list[disnake.Embed] = list()
+
         async for result in results:
             embed = disnake.Embed()
             embed.title = result.get("name")

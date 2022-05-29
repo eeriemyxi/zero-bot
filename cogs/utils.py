@@ -33,13 +33,10 @@ class ActiveUserLogging:
 
         thread = threading.Thread(None, target=self.expire, args=[log_msg], daemon=True)
         thread.start()
-    
-    def get_log_msg(self, author: int) -> ActiveLogMessage:
-        for log_msg in self.data.copy():
-            if log_msg.author == author:
-                return log_msg
 
     def expire(self, log_msg: ActiveLogMessage):
+        """Expire a user's log message."""
+
         time.sleep(self.expiry_time)
 
         for x in self.data.copy(): 

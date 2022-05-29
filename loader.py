@@ -9,8 +9,8 @@ except ImportError:
 
 
 def snake_to_pascal(string):
-    init, *temp = string.split("_")
-    return "".join([init.capitalize(), *map(str.title, temp)])
+    """Convert a snake_case string to PascalCase."""
+    return "".join(x.capitalize() for x in string.split("_"))
 
 
 class Color:
@@ -35,7 +35,10 @@ class Loader:
     @property
     def packages(self):
         for pkg in sorted(iter_modules([self.folder_name]), key=lambda x: x.name):
-            yield Package(self.folder_name, pkg)
+            if not pkg.name.startswith("_"):
+                yield Package(self.folder_name, pkg)
+            else:
+                continue
 
     def load_cogs(self):
         for pkg in self.packages:

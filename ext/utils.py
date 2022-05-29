@@ -1,5 +1,3 @@
-import arrow
-
 import disnake
 from disnake.ext import commands
 
@@ -34,6 +32,7 @@ async def getch_role(guild: disnake.Guild, role_id: int) -> disnake.abc.GuildCha
 
 
 def parse_env_data(text: str):
+    """Parse a string of data from the environment."""
     result = {}
     items = text.split(",")
 
@@ -45,6 +44,7 @@ def parse_env_data(text: str):
 
 
 async def send_message(session, channel_id: int | str, token: str, message: str):
+    """Send a message to a channel."""
     await session.post(
         url="https://canary.discord.com/api/v9/channels/%s/messages" % channel_id,
         headers=dict(authorization=token),
